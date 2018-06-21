@@ -37,6 +37,7 @@ class RemoteRobotRos(RemoteRobot):
             self.reset()
 
 
+
 if __name__ == '__main__':
     r = RemoteRobotRos(10)
     rate = rospy.Rate(60) #60Hz
