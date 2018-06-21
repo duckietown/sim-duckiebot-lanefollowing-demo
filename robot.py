@@ -20,9 +20,21 @@ class RemoteRobotRos(RemoteRobot):
 
 
     def query_camera(self):
-        img = None #self.cam.get_img_nonblocking()
-        if img is not None:
-            pass # How do we send the image?
+        img_arr = self.cam.get_img_nonblocking()
+        if img_arr is not None:
+            # Hardcoded Implementation of ros_numpy's ImageConverter
+            img_msg = Image(encoding='uint8')
+            img_msg.height, img_msg.width = img_arr.shape
+            contig = np.ascontiguousarray(img_arr)
+            img_msg.data = contig.tostring()
+            img_msg.step = contig.strides[0]
+            img_msg.is_bigendian = (
+                arr.dtype.byteorder == '>' or 
+                arr.dtype.byteorder == '=' and sys.byteorder == 'big'
+            )
+
+            self.cam_pub.publish(img_msg)
+
         else:
             pass
 
@@ -35,7 +47,6 @@ class RemoteRobotRos(RemoteRobot):
     def _reset_cb(self, msg):
         if msg.data == True:
             self.reset()
-
 
 
 if __name__ == '__main__':
