@@ -51,7 +51,7 @@ class RemoteRobotRos(RemoteRobot):
 
 if __name__ == '__main__':
     r = RemoteRobotRos(10)
-    rate = rospy.Rate(60) #60Hz
+    rate = rospy.Rate(90) #90Hz
     while not rospy.is_shutdown():
         r.query_camera()
         rate.sleep()
