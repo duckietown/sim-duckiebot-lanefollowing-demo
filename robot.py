@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
+import sys
 import rospy
-
+import numpy as np
 from duckietown_slimremote.pc.robot import RemoteRobot
 
 from std_msgs.msg import Bool, String
@@ -18,7 +19,6 @@ class RemoteRobotRos(RemoteRobot):
         self.cam_pub = rospy.Publisher('/img', Image, queue_size=10)
         rospy.init_node('RemoteRobotRos')
 
-
     def query_camera(self):
         img_arr = self.cam.get_img_nonblocking()
         if img_arr is not None:
@@ -29,8 +29,8 @@ class RemoteRobotRos(RemoteRobot):
             img_msg.data = contig.tostring()
             img_msg.step = contig.strides[0]
             img_msg.is_bigendian = (
-                arr.dtype.byteorder == '>' or 
-                arr.dtype.byteorder == '=' and sys.byteorder == 'big'
+                img_arr.dtype.byteorder == '>' or
+                img_arr.dtype.byteorder == '=' and sys.byteorder == 'big'
             )
 
             self.cam_pub.publish(img_msg)
@@ -38,11 +38,9 @@ class RemoteRobotRos(RemoteRobot):
         else:
             pass
 
-
     def _action_cb(self, msg):
         action = msg.data.split()
         self.step(action, with_observation=False)
-
 
     def _reset_cb(self, msg):
         if msg.data == True:
