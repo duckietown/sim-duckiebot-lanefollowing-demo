@@ -2,7 +2,6 @@ FROM duckietown/rpi-ros-kinetic-base
 RUN [ "cross-build-start" ]
 
 WORKDIR /workspace
-
 RUN git clone https://github.com/duckietown/gym-duckietown-agent agent
 
 RUN apt-get update -y && \
@@ -24,6 +23,9 @@ RUN pip install -e agent
 
 RUN [ "cross-build-end" ]
 
-CMD ["bash"]
+COPY ./ros_entrypoint.sh /
+ENTRYPOINT ["/ros_entrypoint.sh"]
+
+CMD ["/bin/bash"]
 
 CMD python agent/agent-ros.py --no-render

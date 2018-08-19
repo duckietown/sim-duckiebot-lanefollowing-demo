@@ -18,9 +18,11 @@ services:
         - .:/workspace/agent/
         image: duckietown/gym-duckietown-ros
         entrypoint: qemu-arm-static
-        command: /usr/local/bin/python agent/agent-ros.py --no-render
+        command: bash -c "source /opt/ros/kinetic/setup.bash && roscore && /usr/local/bin/python agent/agent-ros.py --no-render"
         depends_on:
         - "gym-duckietown-server"
+        ports:
+        - "11311:11311"
         environment:
         - DUCKIETOWN_SERVER=gym-duckietown-server
         networks:
