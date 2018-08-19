@@ -17,11 +17,12 @@ RUN apt-get update -y && \
     apt-get remove -y git && \
     rm -rf /var/lib/apt/lists/*
 
-RUN [ "cross-build-end" ]
-
 COPY agent-ros.py agent
 COPY ros-envs/envs agent/gym_duckietown_agent/envs
-COPY ros-envs/__init__.py agent/gym_duckietown_agent/__init__.py   
+COPY ros-envs/__init__.py agent/gym_duckietown_agent/__init__.py
+RUN pip install -e agent
+
+RUN [ "cross-build-end" ]
 
 CMD ["bash"]
 
