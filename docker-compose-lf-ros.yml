@@ -12,11 +12,11 @@ services:
         ports:
         - "8902:8902"
         - "5558:5558"
-    gym-duckietown-agent:
+    gym-duckietown-ros:
         build: ./
         volumes:
         - .:/workspace/agent/
-        image: duckietown/gym-duckietown-agent
+        image: duckietown/gym-duckietown-ros
         entrypoint: qemu-arm-static
         command: /usr/local/bin/python agent/agent-ros.py --no-render
         depends_on:
