@@ -1,4 +1,7 @@
 FROM duckietown/rpi-ros-kinetic-base
+
+COPY qemu-arm-static /usr/bin/qemu-arm-static
+
 RUN [ "cross-build-start" ]
 
 WORKDIR /workspace
@@ -24,6 +27,7 @@ RUN pip install -e agent
 RUN [ "cross-build-end" ]
 
 COPY ./ros_entrypoint.sh /
+
 ENTRYPOINT ["/ros_entrypoint.sh"]
 
 CMD ["/bin/bash"]
