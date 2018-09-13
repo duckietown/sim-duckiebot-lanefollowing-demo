@@ -1,4 +1,8 @@
-FROM ros:kinetic-perception
+FROM duckietown/rpi-ros-kinetic-base
+
+COPY qemu-arm-static /usr/bin/qemu-arm-static
+
+RUN [ "cross-build-start" ]
 
 WORKDIR /workspace
 
@@ -19,5 +23,14 @@ RUN apt-get update -y && \
 
 COPY . agent
 RUN pip install -e agent
+CMD python agent/rosbridge.py
+
+RUN [ "cross-build-end" ]
+
+COPY ./ros_entrypoint.sh /
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+
+CMD ["/bin/bash"]
 CMD python agent/rosbridge.py
 
