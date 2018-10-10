@@ -1,0 +1,93 @@
+version: '3'
+services:
+    gym-duckietown-server:
+        image: duckietown/gym-duckietown-server:2018.8.15
+        networks:
+        - gym-duckietown-net
+        environment:
+        - DISPLAY=:0
+        - DUCKIETOWN_CHALLENGE=LF
+        volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        ports:
+        - "8902:8902"
+        - "5558:5558"
+        expose:
+        - "8902"
+        - "5558"
+
+    gym-duckietown-ros:
+        build: 
+            context: .
+            dockerfile: DockerfileRos
+        volumes:
+        - .:/workspace/agent/
+        entrypoint: /ros_entrypoint.sh
+        command: /usr/bin/python agent/rosbridge.py
+        depends_on:
+        - "rosmaster"
+        networks:
+        - gym-duckietown-net
+        environment:
+        - "ROS_MASTER_URI=http://rosmaster:11311"
+        - DUCKIETOWN_SERVER=gym-duckietown-server
+        expose:
+        - "8902"
+        - "5558"
+
+    action-ros:
+        build:
+            context: .
+            dockerfile: DockerfileRos
+        volumes:
+        - .:/workspace/agent/
+        entrypoint: /ros_entrypoint.sh
+        command: /usr/bin/python agent/action_test.py
+        depends_on:
+        - "gym-duckietown-server"
+        - "rosmaster"
+        networks:
+        - gym-duckietown-net
+        environment:
+        - "ROS_MASTER_URI=http://rosmaster:11311"
+        expose:
+        - "8902"
+        - "5558"
+
+    rosmaster:
+        image: ros:kinetic-perception
+        networks:
+        - gym-duckietown-net
+        ports:
+        - "11311:11311"
+        expose:
+        - "8902"
+        - "5558"
+        command: roscore
+
+    # rosmonitor:
+    #     image: ros:kinetic-perception
+    #     networks:
+    #     - gym-duckietown-net
+    #     depends_on:
+    #     - "rosmaster"
+    #     command: bash -c "sleep 2 && rosbag record /img -O /tmp/rosbag/b.bag -l 30"
+    #     volumes:
+    #     - /tmp/rosbag:/tmp/rosbag
+    #     environment:
+    #     - "ROS_MASTER_URI=http://rosmaster:11311"
+
+    lanefollow:
+        image: duckietown/rpi-duckiebot-lanefollowing-demo:master18
+        networks:
+        - gym-duckietown-net
+        depends_on:
+        - "rosmaster"
+        command: "./run_lanefollowingdemo.sh"
+        entrypoint:
+        - "qemu3-arm-static"
+        environment:
+        - "ROS_MASTER_URI=http://rosmaster:11311"
+
+networks:
+  gym-duckietown-net:

@@ -1,45 +1,22 @@
-from duckietown_slimremote.networking import make_sub_socket, make_pub_socket, construct_action, recv_array, \
-    get_ip, recv_gym
-from duckietown_slimremote.helpers import random_id, timer
-
-import time
-
-import zmq
-
-from duckietown_slimremote.helpers import random_id, get_py_version
-
+from duckietown_slimremote.pc.robot import RemoteRobot
 import rospy
-from std_msgs.msg import Bool, String
+from std_msgs.msg import Bool, String, Header
 from sensor_msgs.msg import Image
 import numpy as np
+import os
 
 
 class ROSBridge(object):
     def __init__(self):
-        self.context = zmq.Context()
-
-        self.image_sub = make_sub_socket(target="gym-duckietown-server", for_images=True)
-        self.action_pub = make_pub_socket(context_=self.context)
-
-        self.poller = zmq.Poller()
-        self.poller.register(self.image_sub, zmq.POLLIN)
-
-        self.own_id = random_id()
-        self.own_ip = get_ip()
-        msg = construct_action(self.own_id, self.own_ip)
-
-        time.sleep(1)  # wait for sock init
-
-        print("sending init", msg)
-
-        # init
-        self.action_pub.send_string(msg)
-
+        print("Hello!")
+        host = os.getenv("DUCKIETOWN_SERVER", "localhost")
+        # Create ZMQ connection
+        self.sim = RemoteRobot(host, silent=False)
         self.action_sub = rospy.Subscriber('/1', String, self._action_cb)
-        # self.reset_sub = rospy.Subscriber('/2', Bool, self._reset_cb)
 
         self.cam_pub = rospy.Publisher('/img', Image, queue_size=10)
-        self.action = construct_action(self.own_id, self.own_ip, [0, 0])
+        self.action_debug_pub = rospy.Publisher('/1', String, queue_size=10)
+        self.action = np.array([0, 0])
 
         rospy.init_node('RemoteRobotRos')
         self.r = rospy.Rate(60)
@@ -47,13 +24,13 @@ class ROSBridge(object):
     def _action_cb(self, msg):
         action = msg.data.split()
         assert len(action) == 2
-
-        self.action = construct_action(self.own_id, self.own_ip, action)
+        # print("Got action {}".format(action))
+        self.action = np.array(action)
         
 
     def _publish_img(self, obs):
         # Hardcoded Implementation of ros_numpy's ImageConverter
-        img_msg = Image(encoding='uint8')
+        img_msg = Image(encoding='rgb8')
         img_msg.height, img_msg.width, _ = obs.shape
         contig = np.ascontiguousarray(obs)
         img_msg.data = contig.tostring()
@@ -62,17 +39,17 @@ class ROSBridge(object):
             obs.dtype.byteorder == '>' or
             obs.dtype.byteorder == '=' and sys.byteorder == 'big'
         )
-        
+
+        time = rospy.get_rostime()
+        img_msg.header.stamp.secs = time.secs
+        img_msg.header.stamp.nsecs = time.nsecs
+  
         self.cam_pub.publish(img_msg)
 
     def spin(self):
         while not rospy.is_shutdown():
-            self.action_pub.send_string(self.action)
-            socks = dict(self.poller.poll(5))
-            if self.image_sub in socks and socks[self.image_sub] == zmq.POLLIN:
-                img, r , d , _ = recv_gym(self.image_sub)
-                self._publish_img(img)
-
+            img, r , d, _ = self.sim.step(self.action)
+            self._publish_img(img)
             self.r.sleep()
 
 r = ROSBridge()
