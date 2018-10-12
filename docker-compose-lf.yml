@@ -19,7 +19,7 @@ services:
     gym-duckietown-ros:
         build: 
             context: .
-            dockerfile: DockerfileRos
+            dockerfile: Dockerfile
         entrypoint: /ros_entrypoint.sh
         command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/rosbridge.py"
         depends_on:
@@ -35,39 +35,6 @@ services:
         expose:
         - "8902"
         - "5558"
-        
-    # action-ros:
-    #     build:
-    #         context: .
-    #         dockerfile: DockerfileRos
-    #     entrypoint: /ros_entrypoint.sh
-    #     command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/action_test.py"
-    #     depends_on:
-    #     - "gym-duckietown-server"
-    #     - "lanefollow"
-    #     networks:
-    #     - gym-duckietown-net
-    #     volumes:
-    #     - .:/workspace/agent/
-    #     environment:
-    #     - "ROS_MASTER_URI=http://lanefollow:11311"
-    #     - "HOSTNAME=lanefollow"
-    #     expose:
-    #     - "8902"
-    #     - "5558"
-
-    # rosmaster:
-    #     image: ros:kinetic-perception
-    #     networks:
-    #     - gym-duckietown-net
-    #     ports:
-    #     - "11311:11311"
-    #     expose:
-    #     - "8902"
-    #     - "5558"
-    #     command: roscore
-    #     environment:
-    #     - "ROS_MASTER_URI=http://rosmaster:11311"
 
     rosmonitor:
         image: ros:kinetic-perception

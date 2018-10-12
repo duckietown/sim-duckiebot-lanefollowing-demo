@@ -11,6 +11,7 @@ RUN apt-get update -y && \
     python-dev \
     python-wheel \
     python-pip \
+    python-tk \
     libatlas-base-dev && \
     apt-get install -y --no-install-recommends libpng12-dev && \
     pip install -e git+https://github.com/duckietown/duckietown-slimremote.git#egg=duckietown-slimremote && \

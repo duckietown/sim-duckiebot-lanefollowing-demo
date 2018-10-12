@@ -23,7 +23,6 @@ class ROSBridge(object):
         self.cam_info_pub = rospy.Publisher('/{}/camera_node/camera_info'.format(self.rosmaster), CameraInfo, queue_size=1)
 
         rospy.init_node('RemoteRobotRos')
-        rospy.set_param('{}/verbose'.format(os.getenv('HOSTNAME')), "true")
 
         self.r = rospy.Rate(10)
 
