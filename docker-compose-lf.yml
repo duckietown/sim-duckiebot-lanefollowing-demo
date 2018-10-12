@@ -49,17 +49,17 @@ services:
         - "HOSTNAME=default"
 
     # Optional: Just records a bagfile for monitoring purposes
-    rosmonitor:
-        image: ros:kinetic-perception
-        networks:
-        - gym-duckietown-net
-        depends_on:
-        - "lanefollow"
-        command: bash -c "sleep 30 && rosbag record /default/line_detector_node/image_with_lines -O /home/rosbag/full.bag -l 1000"
-        volumes:
-        - /home/rosbag:/home/rosbag
-        environment:
-        - "ROS_MASTER_URI=http://lanefollow:11311"
+    # rosmonitor:
+    #     image: ros:kinetic-perception
+    #     networks:
+    #     - gym-duckietown-net
+    #     depends_on:
+    #     - "lanefollow"
+    #     command: bash -c "sleep 30 && rosbag record /default/line_detector_node/image_with_lines -O /home/rosbag/full.bag -l 1000"
+    #     volumes:
+    #     - /home/rosbag:/home/rosbag
+    #     environment:
+    #     - "ROS_MASTER_URI=http://lanefollow:11311"
 
 
 networks:

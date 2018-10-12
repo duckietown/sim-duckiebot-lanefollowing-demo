@@ -21,6 +21,7 @@ class ROSAgent(object):
         # Subscribes to the output of the lane_controller_node
         self.action_sub = rospy.Subscriber('/{}/lane_controller_node/car_cmd'.format(
             self.vehicle), Twist2DStamped, self._action_cb)
+        self.action = np.array([0, 0])
 
         # Publishes onto the corrected image topic 
         # since image out of simulator is currently rectified

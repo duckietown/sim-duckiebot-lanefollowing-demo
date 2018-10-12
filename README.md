@@ -14,7 +14,7 @@ To get started, fork or clone this git repository and enter the project director
 
 ## Usage
 
-To launch the lane following task, run the following command:
+To launch the lane following demo, run the following command:
 
     docker-compose -f docker-compose-lf-ros.yml pull && \
     docker-compose -f docker-compose-lf-ros.yml up
