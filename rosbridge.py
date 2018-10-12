@@ -1,78 +1,57 @@
-from duckietown_slimremote.networking import make_sub_socket, make_pub_socket, construct_action, recv_array, \
-    get_ip, recv_gym
-from duckietown_slimremote.helpers import random_id, timer
-
-import time
-
-import zmq
-
-from duckietown_slimremote.helpers import random_id, get_py_version
-
+from duckietown_slimremote.pc.robot import RemoteRobot
 import rospy
-from std_msgs.msg import Bool, String
-from sensor_msgs.msg import Image
+from std_msgs.msg import Bool, String, Header
+from sensor_msgs.msg import CompressedImage, CameraInfo
+from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
 import numpy as np
+import os
+import cv2
 
 
 class ROSBridge(object):
     def __init__(self):
-        self.context = zmq.Context()
+        print("Hello!")
+        host = os.getenv("DUCKIETOWN_SERVER", "localhost")
+        # Create ZMQ connection
+        self.sim = RemoteRobot(host, silent=False)
+        self.rosmaster = os.getenv('HOSTNAME')
+        self.action_sub = rospy.Subscriber('/{}/lane_controller_node/car_cmd'.format(self.rosmaster), Twist2DStamped, self._action_cb)
 
-        self.image_sub = make_sub_socket(target="gym-duckietown-server", for_images=True)
-        self.action_pub = make_pub_socket(context_=self.context)
+        self.cam_pub = rospy.Publisher('/{}/corrected_image/compressed'.format(self.rosmaster), CompressedImage, queue_size=10)
+        self.action = np.array([0, 0])
 
-        self.poller = zmq.Poller()
-        self.poller.register(self.image_sub, zmq.POLLIN)
-
-        self.own_id = random_id()
-        self.own_ip = get_ip()
-        msg = construct_action(self.own_id, self.own_ip)
-
-        time.sleep(1)  # wait for sock init
-
-        print("sending init", msg)
-
-        # init
-        self.action_pub.send_string(msg)
-
-        self.action_sub = rospy.Subscriber('/1', String, self._action_cb)
-        # self.reset_sub = rospy.Subscriber('/2', Bool, self._reset_cb)
-
-        self.cam_pub = rospy.Publisher('/img', Image, queue_size=10)
-        self.action = construct_action(self.own_id, self.own_ip, [0, 0])
+        self.cam_info_pub = rospy.Publisher('/{}/camera_node/camera_info'.format(self.rosmaster), CameraInfo, queue_size=1)
 
         rospy.init_node('RemoteRobotRos')
-        self.r = rospy.Rate(60)
+
+        self.r = rospy.Rate(10)
 
     def _action_cb(self, msg):
-        action = msg.data.split()
-        assert len(action) == 2
-
-        self.action = construct_action(self.own_id, self.own_ip, action)
-        
+        v = msg.v
+        omega = msg.omega
+        self.action = np.array([v, omega])
+    
+    def _publish_info(self):
+        self.cam_info_pub.publish(CameraInfo())      
 
     def _publish_img(self, obs):
-        # Hardcoded Implementation of ros_numpy's ImageConverter
-        img_msg = Image(encoding='uint8')
-        img_msg.height, img_msg.width, _ = obs.shape
-        contig = np.ascontiguousarray(obs)
-        img_msg.data = contig.tostring()
-        img_msg.step = contig.strides[0]
-        img_msg.is_bigendian = (
-            obs.dtype.byteorder == '>' or
-            obs.dtype.byteorder == '=' and sys.byteorder == 'big'
-        )
-        
-        self.cam_pub.publish(img_msg)
+        img_msg = CompressedImage()
+
+        time = rospy.get_rostime()
+        img_msg.header.stamp.secs = time.secs
+        img_msg.header.stamp.nsecs = time.nsecs
+
+        img_msg.format = "jpeg"
+        contig = cv2.cvtColor(np.ascontiguousarray(obs), cv2.COLOR_BGR2RGB)
+        img_msg.data = np.array(cv2.imencode('.jpg', contig)[1]).tostring()
+  
+        self.cam_pub.publish(img_msg)    
 
     def spin(self):
         while not rospy.is_shutdown():
-            self.action_pub.send_string(self.action)
-            socks = dict(self.poller.poll(5))
-            if self.image_sub in socks and socks[self.image_sub] == zmq.POLLIN:
-                img, r , d , _ = recv_gym(self.image_sub)
-                self._publish_img(img)
-
+            img, r , d, _ = self.sim.step(self.action)
+            self._publish_img(img)
+            self._publish_info()
             self.r.sleep()
 
 r = ROSBridge()
