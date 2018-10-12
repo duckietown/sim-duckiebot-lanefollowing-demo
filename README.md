@@ -40,16 +40,6 @@ To write your own ROS agent, first fork this repository, and edit the file [`age
 
 Then check the average reward and try to improve your score. Good luck!
 
-## Submission
-
-When the competition opens, you will [submit](https://github.com/duckietown/duckietown-shell#ai-do-submissions) your Docker image using `dt`, the [Duckietown Shell](https://github.com/duckietown/duckietown-shell):
-
-    dt aido18 submit <YOUR_DOCKER_HUB_USERNAME>/<YOUR_IMAGE_BASED_ON_GYM_DUCKIETOWN_AGENT>
-
-This Docker image will contain a fully functioning ROS agent. If it successfully runs on the simulator, we will evaluate the submission and run it on a physical robot, and send you a link to the log.
-
-The leaderboard evaluation will occur on some randomized environments which are not provided to participants. Be careful not to overfit!
-
 ## Architecture
 
 TODO: Bhairav
