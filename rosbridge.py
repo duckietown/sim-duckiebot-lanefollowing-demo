@@ -1,7 +1,7 @@
 from duckietown_slimremote.pc.robot import RemoteRobot
 import rospy
 from std_msgs.msg import Bool, String, Header
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import CompressedImage, CameraInfo
 from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
 import numpy as np
 import os
@@ -14,19 +14,26 @@ class ROSBridge(object):
         host = os.getenv("DUCKIETOWN_SERVER", "localhost")
         # Create ZMQ connection
         self.sim = RemoteRobot(host, silent=False)
-        self.action_sub = rospy.Subscriber('/1', Twist2DStamped, self._action_cb)
+        self.rosmaster = os.getenv('HOSTNAME')
+        self.action_sub = rospy.Subscriber('/{}/lane_controller_node/car_cmd'.format(self.rosmaster), Twist2DStamped, self._action_cb)
 
-        self.cam_pub = rospy.Publisher('/corrected_image/compressed', CompressedImage, queue_size=10)
+        self.cam_pub = rospy.Publisher('/{}/corrected_image/compressed'.format(self.rosmaster), CompressedImage, queue_size=10)
         self.action = np.array([0, 0])
 
+        self.cam_info_pub = rospy.Publisher('/{}/camera_node/camera_info'.format(self.rosmaster), CameraInfo, queue_size=1)
+
         rospy.init_node('RemoteRobotRos')
-        self.r = rospy.Rate(60)
+        rospy.set_param('{}/verbose'.format(os.getenv('HOSTNAME')), "true")
+
+        self.r = rospy.Rate(10)
 
     def _action_cb(self, msg):
         v = msg.v
         omega = msg.omega
         self.action = np.array([v, omega])
-        
+    
+    def _publish_info(self):
+        self.cam_info_pub.publish(CameraInfo())      
 
     def _publish_img(self, obs):
         img_msg = CompressedImage()
@@ -36,15 +43,16 @@ class ROSBridge(object):
         img_msg.header.stamp.nsecs = time.nsecs
 
         img_msg.format = "jpeg"
-        contig = np.ascontiguousarray(np.roll(obs, 2, axis=-1))
+        contig = cv2.cvtColor(np.ascontiguousarray(obs), cv2.COLOR_BGR2RGB)
         img_msg.data = np.array(cv2.imencode('.jpg', contig)[1]).tostring()
   
-        self.cam_pub.publish(img_msg)
+        self.cam_pub.publish(img_msg)    
 
     def spin(self):
         while not rospy.is_shutdown():
             img, r , d, _ = self.sim.step(self.action)
             self._publish_img(img)
+            self._publish_info()
             self.r.sleep()
 
 r = ROSBridge()

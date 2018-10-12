@@ -23,71 +23,75 @@ services:
         entrypoint: /ros_entrypoint.sh
         command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/rosbridge.py"
         depends_on:
-        - "rosmaster"
+        - "lanefollow"
         volumes:
         - .:/workspace/agent/
         networks:
         - gym-duckietown-net
         environment:
-        - "ROS_MASTER_URI=http://rosmaster:11311"
+        - "ROS_MASTER_URI=http://lanefollow:11311"
         - DUCKIETOWN_SERVER=gym-duckietown-server
+        - "HOSTNAME=default"
         expose:
         - "8902"
         - "5558"
+        
+    # action-ros:
+    #     build:
+    #         context: .
+    #         dockerfile: DockerfileRos
+    #     entrypoint: /ros_entrypoint.sh
+    #     command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/action_test.py"
+    #     depends_on:
+    #     - "gym-duckietown-server"
+    #     - "lanefollow"
+    #     networks:
+    #     - gym-duckietown-net
+    #     volumes:
+    #     - .:/workspace/agent/
+    #     environment:
+    #     - "ROS_MASTER_URI=http://lanefollow:11311"
+    #     - "HOSTNAME=lanefollow"
+    #     expose:
+    #     - "8902"
+    #     - "5558"
 
-    action-ros:
-        build:
-            context: .
-            dockerfile: DockerfileRos
-        entrypoint: /ros_entrypoint.sh
-        command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/action_test.py"
-        depends_on:
-        - "gym-duckietown-server"
-        - "rosmaster"
-        networks:
-        - gym-duckietown-net
-        volumes:
-        - .:/workspace/agent/
-        environment:
-        - "ROS_MASTER_URI=http://rosmaster:11311"
-        expose:
-        - "8902"
-        - "5558"
-
-    rosmaster:
-        image: ros:kinetic-perception
-        networks:
-        - gym-duckietown-net
-        ports:
-        - "11311:11311"
-        expose:
-        - "8902"
-        - "5558"
-        command: roscore
+    # rosmaster:
+    #     image: ros:kinetic-perception
+    #     networks:
+    #     - gym-duckietown-net
+    #     ports:
+    #     - "11311:11311"
+    #     expose:
+    #     - "8902"
+    #     - "5558"
+    #     command: roscore
+    #     environment:
+    #     - "ROS_MASTER_URI=http://rosmaster:11311"
 
     rosmonitor:
         image: ros:kinetic-perception
         networks:
         - gym-duckietown-net
         depends_on:
-        - "rosmaster"
-        command: bash -c "sleep 2 && rosbag record /corrected_image/compressed -O /tmp/rosbag/compose   .bag -l 100"
+        - "lanefollow"
+        command: bash -c "sleep 30 && rosbag record /default/line_detector_node/image_with_lines -O /home/rosbag/full.bag -l 1000"
         volumes:
-        - /tmp/rosbag:/tmp/rosbag
+        - /home/rosbag:/home/rosbag
         environment:
-        - "ROS_MASTER_URI=http://rosmaster:11311"
+        - "ROS_MASTER_URI=http://lanefollow:11311"
 
-    # lanefollow:
-    #     image: duckietown/rpi-duckiebot-lanefollowing-demo:master18
-    #     networks:
-    #     - gym-duckietown-net
-    #     depends_on:
-    #     - "rosmaster"
-    #     command: "./run_lanefollowingdemo.sh"
-    #     entrypoint:
-    #     - "qemu3-arm-static"
-    #     environment:
-    #     - "ROS_MASTER_URI=http://rosmaster:11311"
+    lanefollow:
+        build: 
+            context: .
+            dockerfile: DockerfileRPI
+        networks:
+        - gym-duckietown-net
+        command: /bin/bash -c "source /home/software/docker/env.sh && ./set_vehicle_name.sh && roslaunch /home/software/lf_slim.launch"
+        entrypoint:
+        - "qemu3-arm-static"
+        environment:
+        - "HOSTNAME=default"
 
 networks:
   gym-duckietown-net:
