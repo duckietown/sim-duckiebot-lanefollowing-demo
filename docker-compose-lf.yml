@@ -21,7 +21,7 @@ services:
             context: .
             dockerfile: Dockerfile
         entrypoint: /ros_entrypoint.sh
-        command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/rosbridge.py"
+        command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/rosagent.py"
         depends_on:
         - "lanefollow"
         volumes:
@@ -36,22 +36,10 @@ services:
         - "8902"
         - "5558"
 
-    rosmonitor:
-        image: ros:kinetic-perception
-        networks:
-        - gym-duckietown-net
-        depends_on:
-        - "lanefollow"
-        command: bash -c "sleep 30 && rosbag record /default/line_detector_node/image_with_lines -O /home/rosbag/full.bag -l 1000"
-        volumes:
-        - /home/rosbag:/home/rosbag
-        environment:
-        - "ROS_MASTER_URI=http://lanefollow:11311"
-
     lanefollow:
         build: 
             context: .
-            dockerfile: DockerfileRPI
+            dockerfile: DockerfileLFSlim
         networks:
         - gym-duckietown-net
         command: /bin/bash -c "source /home/software/docker/env.sh && ./set_vehicle_name.sh && roslaunch /home/software/lf_slim.launch"
@@ -59,6 +47,20 @@ services:
         - "qemu3-arm-static"
         environment:
         - "HOSTNAME=default"
+
+    # Optional: Just records a bagfile for monitoring purposes
+    # rosmonitor:
+    #     image: ros:kinetic-perception
+    #     networks:
+    #     - gym-duckietown-net
+    #     depends_on:
+    #     - "lanefollow"
+    #     command: bash -c "sleep 30 && rosbag record /default/line_detector_node/image_with_lines -O /home/rosbag/full.bag -l 1000"
+    #     volumes:
+    #     - /home/rosbag:/home/rosbag
+    #     environment:
+    #     - "ROS_MASTER_URI=http://lanefollow:11311"
+
 
 networks:
   gym-duckietown-net:
