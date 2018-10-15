@@ -16,8 +16,8 @@ To get started, fork or clone this git repository and enter the project director
 
 To launch the lane following demo, run the following command:
 
-    docker-compose -f docker-compose-lf-ros.yml pull && \
-    docker-compose -f docker-compose-lf-ros.yml up
+    docker-compose -f docker-compose-lf.yml pull && \
+    docker-compose -f docker-compose-lf.yml up
 
 You will then start to see output from the Lane Following code, which can be found [here](https://github.com/duckietown/Software/tree/master18/catkin_ws/src/10-lane-control)
 
@@ -46,3 +46,5 @@ If you'd like to monitor the progress of your system realtime via the ROS messag
 `docker run --entrypoint=qemu3-arm-static --network=gym-duckietown-net -it duckietown/rpi-duckiebot-base:master18 /bin/bash`
 
 Which will give you a bash shell inside of a Duckietown-compatible Docker container (we can't use a normal ROS Kinetic container due to the fact that we need the Duckietown-specific messages to be built).
+
+Inside of the shell, you will need to `export ROS_MASTER_URI=http://lanefollow:11311`, which will point to the ROS Master currently running in the `lanefollow` container.
