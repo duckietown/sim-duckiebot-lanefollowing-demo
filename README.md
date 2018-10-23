@@ -15,7 +15,8 @@ To get started, fork or clone this git repository and enter the project director
 ## Usage
 
 To launch the lane following demo, run the following command:
-
+    
+    docker network create gym-duckietown-net && \
     docker-compose -f docker-compose-lf.yml pull && \
     docker-compose -f docker-compose-lf.yml up
 
