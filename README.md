@@ -10,7 +10,7 @@ A simple demo of using the traditional Duckietown stack to do lane following in 
 
 To get started, fork or clone this git repository and enter the project directory:
 
-    git clone https://github.com/duckietown/sim-duckiebot-lanefollowing-demo 
+    git clone git@github.com:duckietown/sim-duckiebot-lanefollowing-demo.git
 
 ## Usage
 
