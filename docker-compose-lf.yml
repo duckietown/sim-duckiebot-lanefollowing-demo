@@ -57,7 +57,7 @@ services:
         - "lanefollow"
         command: bash -c "sleep 10 && rosbag record /default/line_detector_node/image_with_lines -O /home/rosbag/full.bag -l 1000"
         volumes:
-        - /home/rosbag:/home/rosbag
+        - /tmp/rosbag:/tmp/rosbag
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
 
