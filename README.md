@@ -46,6 +46,8 @@ If you'd like to monitor the progress of your system realtime via the ROS messag
 
 `docker run --entrypoint=qemu3-arm-static --network=gym-duckietown-net -it duckietown/rpi-duckiebot-base:master18 /bin/bash`
 
+If you want to run ROS plugins such as `rqt*` or other graphical tools, you will need to [enable X11 forwarding](http://wiki.ros.org/docker/Tutorials/GUI#Using_X_server). To do so, you will need to first run `xhost +` on your host machine to allow incoming connections, then add the following flags to the above `docker run` command: `--env="DISPLAY" --env="QT_X11_NO_MITSHM=1" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw"`.
+
 Which will give you a bash shell inside of a Duckietown-compatible Docker container (we can't use a normal ROS Kinetic container due to the fact that we need the Duckietown-specific messages to be built).
 
 Inside of the shell, you will need to `export ROS_MASTER_URI=http://lanefollow:11311`, which will point to the ROS Master currently running in the `lanefollow` container.
