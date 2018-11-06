@@ -12,6 +12,8 @@ To get started, fork or clone this git repository and enter the project director
 
     git clone git@github.com:duckietown/sim-duckiebot-lanefollowing-demo.git
 
+You will also need `docker-compose`. Follow instructions [here](https://docs.docker.com/compose/install/) to install. 
+
 ## Usage
 
 To launch the lane following demo, run the following command:
