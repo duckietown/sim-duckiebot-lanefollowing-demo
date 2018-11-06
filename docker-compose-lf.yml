@@ -42,7 +42,9 @@ services:
             dockerfile: DockerfileLFSlim
         networks:
         - gym-duckietown-net
-        command: /bin/bash -c "source /home/software/docker/env.sh && ./set_vehicle_name.sh && roslaunch /home/software/lf_slim.launch"
+        command: /bin/bash -c "source /home/software/docker/env.sh && ./set_vehicle_name.sh  && make build-catkin-parallel  && source /home/software/catkin_ws/devel/setup.bash && roslaunch /lf_slim.launch"
+        volumes:
+        - ./Software/:/home/software/
         entrypoint:
         - "qemu3-arm-static"
         environment:

@@ -28,6 +28,7 @@
                     <!-- NOTE: "line_detector_param_file_name" as special case -->
                     <arg name="param_file_name" value="$(arg line_detector_param_file_name)"/>
                     <arg name="verbose" value="$(arg verbose)" />
+                    <arg name="local" value="true" />
                 </include>
             </group>
 
@@ -37,6 +38,7 @@
                         <arg name="veh" value="$(arg veh)"/>
                         <arg name="config" value="$(arg config)"/>
                         <arg name="param_file_name" value="$(arg param_file_name)"/>
+                        <arg name="local" value="true" />
                     </include>
             </group>
 
@@ -48,6 +50,7 @@
                     <arg name="veh" value="$(arg veh)"/>
                     <arg name="config" value="$(arg config)"/>
                     <arg name="param_file_name" value="$(arg param_file_name)"/>
+                    <arg name="local" value="true" />
                 </include>
             </group>
             
@@ -61,6 +64,7 @@
                     <arg name="veh" value="$(arg veh)"/>
                     <arg name="config" value="$(arg config)"/>
                     <arg name="param_file_name" value="$(arg param_file_name)"/>
+                    <arg name="local" value="true" />
                 </include>
             </group>
 
@@ -71,6 +75,7 @@
                 <include file="$(find dagu_car)/launch/inverse_kinematics_node.launch">
                     <arg name="veh" value="$(arg veh)"/>
                     <arg name="config" value="$(arg config)"/>
+                    <arg name="local" value="true" />
                 </include>
             </group>
 
