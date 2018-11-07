@@ -21,7 +21,7 @@ services:
             context: .
             dockerfile: Dockerfile
         entrypoint: /ros_entrypoint.sh
-        command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python agent/rosagent.py"
+        command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python rosagent.py"
         depends_on:
         - "lanefollow"
         volumes:
@@ -60,6 +60,27 @@ services:
         - /tmp/rosbag:/tmp/rosbag
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
+
+    # Optional
+    gym-duckietown-custom-catkin:
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        entrypoint: /ros_entrypoint.sh
+        command: /bin/bash -c "source catkin_ws/devel/setup.bash && rosrun dt_dependent_node dt_fun_pub"
+        depends_on:
+        - "lanefollow"
+        volumes:
+        - .:/workspace/agent/
+        networks:
+        - gym-duckietown-net
+        environment:
+        - "ROS_MASTER_URI=http://lanefollow:11311"
+        - DUCKIETOWN_SERVER=gym-duckietown-server
+        - "HOSTNAME=default"
+        expose:
+        - "8902"
+        - "5558"
 
 
 networks:
