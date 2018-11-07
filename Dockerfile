@@ -4,14 +4,14 @@ RUN ["cross-build-start"]
 
 WORKDIR /workspace
 
-RUN pip install -e git+https://github.com/duckietown/duckietown-slimremote.git#egg=duckietown-slimremote
+RUN pip install -e git+https://github.com/duckietown/duckietown-slimremote.git@aido1_remote3-v3#egg=duckietown-slimremote
 
 RUN pip install --user --upgrade pillow
 
 COPY rosagent.py ./
-COPY setup.py ./
+# COPY setup.py ./
 
-RUN pip install -e .
+# RUN pip install -e .
 
 # Change from here
 RUN /bin/bash -c "mkdir -p catkin_ws/src/"
