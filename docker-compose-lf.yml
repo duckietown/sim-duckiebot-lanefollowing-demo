@@ -18,7 +18,7 @@ services:
 
     gym-duckietown-ros:
         image: duckietown/gym-duckietown-ros-agent
-        command: /bin/bash -c "ls dt_msg_ws && source dt_msg_ws/devel/setup.bash && /usr/bin/python agent/rosagent.py"
+        command: /bin/bash -c "source dt_msg_ws/devel/setup.bash && /usr/bin/python agent/rosagent.py"
         depends_on:
         - "lanefollow"
         volumes:
