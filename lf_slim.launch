@@ -76,4 +76,9 @@
 
     </group>
     <!-- End Lane Control -->
+
+    <!-- Start Test Node -->
+    <!-- <node pkg="dt_dependent_node" name="dt_dependent_node" type="dt_dependent_node.py" output="screen"> 
+    </node> -->
+    <!-- End Test Node -->
 </launch>
