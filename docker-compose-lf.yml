@@ -1,5 +1,21 @@
 version: '3'
 services:
+    gym-duckietown-server:
+        image: duckietown/gym-duckietown-server-python2:more-exposure
+        networks:
+        - gym-duckietown-net
+        environment:
+        - DISPLAY=:0
+        - DUCKIETOWN_CHALLENGE=LF
+        volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        ports:
+        - "8902:8902"
+        - "5558:5558"
+        expose:
+        - "8902"
+        - "5558"
+
     gym-duckietown-ros:
         build: 
             context: .
@@ -15,7 +31,11 @@ services:
         - "qemu3-arm-static"
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
+        - DUCKIETOWN_SERVER=gym-duckietown-server
         - "HOSTNAME=default"
+        expose:
+        - "8902"
+        - "5558"
 
     lanefollow:
         build: 
@@ -57,6 +77,7 @@ services:
         entrypoint: "qemu3-arm-static"
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
+        - DUCKIETOWN_SERVER=gym-duckietown-server
         - "HOSTNAME=default"
 
 

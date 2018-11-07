@@ -5,14 +5,20 @@ import numpy as np
 import os
 import cv2
 
-from utils.env import launch_env
+
+from duckietown_slimremote.pc.robot import RemoteRobot
+
 
 class ROSAgent(object):
     def __init__(self):
         # Get the vehicle name, which comes in as HOSTNAME
         self.vehicle = os.getenv('HOSTNAME')
+
+        # Get the hostname to conect to server
+        host = os.getenv("DUCKIETOWN_SERVER", "localhost")
         
-        self.env = launch_env(gym_environment)
+        # Create ZMQ connection with Server
+        self.sim = RemoteRobot(host, silent=False)
         
         # Subscribes to the output of the lane_controller_node and IK node
         self.action_sub = rospy.Subscriber('/{}/lane_controller_node/car_cmd'.format(
