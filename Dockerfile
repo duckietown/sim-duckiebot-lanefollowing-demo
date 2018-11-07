@@ -2,6 +2,9 @@ FROM duckietown/rpi-duckiebot-base:master18
 
 RUN ["cross-build-start"]
 
+WORKDIR /workspace
+RUN pip install -e git+https://github.com/duckietown/duckietown-slimremote.git#egg=duckietown-slimremote
+
 COPY rosagent.py ./
 
 # Change from here
@@ -9,8 +12,7 @@ RUN /bin/bash -c "mkdir -p catkin_ws/src/"
 
 # Copy or init your packages in here
 COPY dt_dependent_node catkin_ws/src/dt_dependent_node
-RUN chmod +x catkin_ws/src/dt_dependent_node/scripts/dt_fun_pub.py
-
+RUN chmod +x catkin_ws/src/dt_dependent_node/src/dt_dependent_node.py
 
 RUN /bin/bash -c "cd catkin_ws/src/"
 
