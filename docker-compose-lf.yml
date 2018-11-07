@@ -1,7 +1,7 @@
 version: '3'
 services:
     gym-duckietown-server:
-        image: duckietown/gym-duckietown-server-python2:more-exposure
+        image: duckietown/gym-duckietown-server
         networks:
         - gym-duckietown-net
         environment:
@@ -17,18 +17,14 @@ services:
         - "5558"
 
     gym-duckietown-ros:
-        build: 
-            context: .
-            dockerfile: Dockerfile
-        command: /bin/bash -c "source catkin_ws/devel/setup.bash && /usr/bin/python rosagent.py"
+        image: duckietown/gym-duckietown-ros-agent
+        command: /bin/bash -c "ls dt_msg_ws && source dt_msg_ws/devel/setup.bash && /usr/bin/python agent/rosagent.py"
         depends_on:
         - "lanefollow"
         volumes:
         - .:/workspace/agent/
         networks:
         - gym-duckietown-net
-        entrypoint:
-        - "qemu3-arm-static"
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
         - DUCKIETOWN_SERVER=gym-duckietown-server
@@ -47,6 +43,8 @@ services:
         entrypoint:
         - "qemu3-arm-static"
         environment:
+        - "ROS_MASTER_URI=http://lanefollow:11311"
+        - DUCKIETOWN_SERVER=gym-duckietown-server
         - "HOSTNAME=default"
 
     # Optional: Just records a bagfile for monitoring purposes
@@ -61,12 +59,14 @@ services:
         - /tmp/rosbag:/tmp/rosbag
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
+        - DUCKIETOWN_SERVER=gym-duckietown-server
+        - "HOSTNAME=default"
 
     # Optional
     gym-duckietown-custom-catkin:
         build: 
             context: .
-            dockerfile: Dockerfile
+            dockerfile: DockerfileCatkin
         command: /bin/bash -c "source catkin_ws/devel/setup.bash && rosrun dt_dependent_node dt_dependent_node.py"
         depends_on:
         - "lanefollow"
@@ -79,6 +79,9 @@ services:
         - "ROS_MASTER_URI=http://lanefollow:11311"
         - DUCKIETOWN_SERVER=gym-duckietown-server
         - "HOSTNAME=default"
+        expose:
+        - "8902"
+        - "5558"
 
 
 networks:
