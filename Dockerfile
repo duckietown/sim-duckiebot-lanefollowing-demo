@@ -3,7 +3,7 @@ FROM duckietown/rpi-duckiebot-base:master18
 RUN ["cross-build-start"]
 
 WORKDIR /workspace
-RUN pip install -e git+https://github.com/duckietown/duckietown-slimremote.git#egg=duckietown-slimremote
+RUN pip install -e git+https://github.com/duckietown/duckietown-slimremote.git@aido1_remote3-v3#egg=duckietown-slimremote
 RUN pip install --user --upgrade pillow
 
 COPY rosagent.py ./
