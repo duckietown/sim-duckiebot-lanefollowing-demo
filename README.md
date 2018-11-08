@@ -30,7 +30,7 @@ You can terminate the run at any time by pressing <kbd>CTRL</kbd>+<kbd>c</kbd>.
 
 ## Write your own agent
 
-To write your own ROS agent, first fork this repository, and edit the file `rosagent.py`. Since we are going to be running a few containers, the best way to run is the `docker-compose` command found above.
+To write your own ROS agent, first fork this repository. Since we are going to be running a few containers, the best way to run is the `docker-compose` command found above.
 
 Inside of the `docker-compose-lf.yml` file, you'll find that for purposes of this demo, we are using the `HOSTNAME=default`; the `HOSTNAME` can be thought of as the vehicle name. This is to help mitigate the discrepencies between the real robot and simulator when finding things like configuration files when using the old Duckietown stack.
 

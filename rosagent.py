@@ -1,3 +1,13 @@
+"""
+***DISCLAIMER***
+THIS FILE IS **JUST FOR REFERENCE**.
+The real (and most likely, updated) rosagent.py gets launched inside of a separate container.
+This is mostly for you to see what topics the ROSAgent is listening on.
+
+LOCAL EDITS IN THIS FILE **WILL** NOT BE PROPOGATED!
+"""
+
+
 import rospy
 from sensor_msgs.msg import CompressedImage, CameraInfo
 from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
