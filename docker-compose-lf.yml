@@ -1,24 +1,10 @@
 version: '3'
 services:
-    gym-duckietown-server:
-        image: duckietown/gym-duckietown-server
-        networks:
-        - gym-duckietown-net
-        environment:
-        - DISPLAY=:0
-        - DUCKIETOWN_CHALLENGE=LF
-        volumes:
-        - /tmp/.X11-unix:/tmp/.X11-unix
-        ports:
-        - "8902:8902"
-        - "5558:5558"
-        expose:
-        - "8902"
-        - "5558"
-
     gym-duckietown-ros:
         image: duckietown/gym-duckietown-ros-agent
-        command: /bin/bash -c "source dt_msg_ws/devel/setup.bash && /usr/bin/python agent/rosagent.py"
+        command: /bin/bash -c "./agent/run_display.bash &&
+                               source dt_msg_ws/devel/setup.bash && 
+                               /usr/bin/python agent/rosagent.py"
         depends_on:
         - "lanefollow"
         volumes:
@@ -27,11 +13,18 @@ services:
         - gym-duckietown-net
         environment:
         - "ROS_MASTER_URI=http://lanefollow:11311"
-        - DUCKIETOWN_SERVER=gym-duckietown-server
+        - "DUCKIETOWN_SERVER=gym-duckietown-server"
         - "HOSTNAME=default"
+        - "DISPLAY=:99"
+        - "DUCKIETOWN_CHALLENGE=LF"
         expose:
         - "8902"
         - "5558"
+        volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        ports:
+        - "8902:8902"
+        - "5558:5558"
 
     lanefollow:
         build: 
