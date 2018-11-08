@@ -4,4 +4,5 @@ __pycache__/
 DockerfileROSAgent
 dt_msg_ws/
 setup.py
+run_display.bash
 
