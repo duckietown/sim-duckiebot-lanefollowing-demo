@@ -7,7 +7,7 @@ from duckietown_msgs.msg import WheelsCmdStamped
 
 def continuous_publisher():
     vel_pub = rospy.Publisher('/random/topic/', WheelsCmdStamped, queue_size=1)
-    rospy.init_node('continuous_test_publisher', anonymous=True)
+    rospy.init_node('continuous_test_publisher')
     rate = rospy.Rate(10)
     
     while not rospy.is_shutdown():
