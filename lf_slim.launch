@@ -80,4 +80,9 @@
     <!-- Start Test Node -->
     <node pkg="dt_dependent_node" name="dt_dependent_node" type="dt_dependent_node.py" output="screen" /> 
     <!-- End Test Node -->
+
+    <!-- Start Copied, Custom Node -->
+    <!-- <include file="$(find custom_line_detector)/launch/line_detector_node.launch"/> -->
+    <!-- End Copied, Custom Node -->
+
 </launch>
