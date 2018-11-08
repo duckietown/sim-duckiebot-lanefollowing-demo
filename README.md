@@ -21,6 +21,8 @@ To launch the lane following demo, run the following command:
     docker network create gym-duckietown-net && \
     docker-compose -f docker-compose-lf.yml pull && \
     docker-compose -f docker-compose-lf.yml up
+    
+The first two commands don't need to be run every time, so after pulling, you may just want to run the `up` command.
 
 You will then start to see output from the Lane Following code, which can be found [here](https://github.com/duckietown/Software/tree/master18/catkin_ws/src/10-lane-control)
 
@@ -31,6 +33,13 @@ You can terminate the run at any time by pressing <kbd>CTRL</kbd>+<kbd>c</kbd>.
 To write your own ROS agent, first fork this repository, and edit the file `rosagent.py`. Since we are going to be running a few containers, the best way to run is the `docker-compose` command found above.
 
 Inside of the `docker-compose-lf.yml` file, you'll find that for purposes of this demo, we are using the `HOSTNAME=default`; the `HOSTNAME` can be thought of as the vehicle name. This is to help mitigate the discrepencies between the real robot and simulator when finding things like configuration files when using the old Duckietown stack.
+
+### Making Edits
+
+With `docker-compose`, your Dockerfiles will not rebuilt unless you tell them. There are two ways of going about this:
+
+1. To rebuild everything, run `docker-compose -f docker-compose-lf.yml build [--no-cache]` before running `docker-compose -f docker-compose-lf.yml up`
+2. (Preferred) Rebuild the container you've changed with `docker build -t "{your-containers-tag}" -f {corresponding-Dockerfile} .` and then `docker-compose -f docker-compose-lf.yml up`.
 
 ## Using your own ROS Nodes / `catkin_ws`
 Most likely, you'll want to work off of some of the standalone Duckietown code, but change a node or two. We will look at two examples:
