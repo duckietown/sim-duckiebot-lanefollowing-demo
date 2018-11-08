@@ -2,21 +2,22 @@ FROM duckietown/rpi-duckiebot-base:master18
 
 RUN ["cross-build-start"]
 
-WORKDIR /workspace
-
 # Change from here
-RUN /bin/bash -c "mkdir -p catkin_ws/src/"
+RUN /bin/bash -c "mkdir -p custom_ws/src/"
 
 # Copy or init your packages in here
-COPY dt_dependent_node catkin_ws/src/dt_dependent_node
-RUN chmod +x catkin_ws/src/dt_dependent_node/dt_dependent_node.py
+COPY dt_dependent_node custom_ws/src/dt_dependent_node
+RUN chmod +x custom_ws/src/dt_dependent_node/dt_dependent_node.py
 
-RUN /bin/bash -c "cd catkin_ws/src/"
+RUN /bin/bash -c "cd custom_ws/src/"
 
 # Do not change the below line! This ensures that your workspace is overlayed on top of the Duckietown stack!  
 # MAKE sure this line is present in the build: This workspace overlays: /home/software/catkin_ws/devel;/opt/ros/kinetic
 RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_init_workspace && cd ../.."
-RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_make -j -C catkin_ws/"
-RUN /bin/bash -c "source catkin_ws/devel/setup.bash"
+RUN /bin/bash -c "source /home/software/catkin_ws/devel/setup.bash && catkin_make -j -C custom_ws/"
+RUN /bin/bash -c "source custom_ws/devel/setup.bash"
+
+# Copy your launch file over
+COPY lf_slim.launch .
 
 RUN ["cross-build-end"]
