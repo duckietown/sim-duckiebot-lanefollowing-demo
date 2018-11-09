@@ -16,9 +16,12 @@ To get started, fork or clone this git repository and enter the project director
 
 To launch the lane following demo, run the following command:
     
-    docker network create gym-duckietown-net && \
-    docker-compose -f docker-compose-lf.yml pull && \
-    docker-compose -f docker-compose-lf.yml up
+    docker network create gym-duckietown-net
+    
+    docker-compose -f docker-compose-lf.yml up --pull
+
+Note: if you change one either `Dockerfile` or `DockerfileLFSlim` then you will need to add the `--build` after the up command.
+
 
 You will then start to see output from the Lane Following code, which can be found [here](https://github.com/duckietown/Software/tree/master18/catkin_ws/src/10-lane-control)
 
