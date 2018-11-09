@@ -82,6 +82,7 @@
     <!-- End Test Node -->
 
     <!-- Start Copied, Custom Node -->
+    <!-- Replace Line 25 with this line below! -->
     <!-- <include file="$(find custom_line_detector)/launch/line_detector_node.launch"/> -->
     <!-- End Copied, Custom Node -->
 
