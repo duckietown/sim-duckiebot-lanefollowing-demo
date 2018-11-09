@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc_
+# These are for building duckietown/gym-duckietown-ros-agent.. not needed
+DockerfileROSAgent
+dt_msg_ws/
+setup.py
+run_display.bash
+

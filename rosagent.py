@@ -1,3 +1,13 @@
+"""
+***DISCLAIMER***
+THIS FILE IS **JUST FOR REFERENCE**.
+The real (and most likely, updated) rosagent.py gets launched inside of a separate container.
+This is mostly for you to see what topics the ROSAgent is listening on.
+
+LOCAL EDITS IN THIS FILE **WILL** NOT BE PROPOGATED!
+"""
+
+
 import rospy
 from sensor_msgs.msg import CompressedImage, CameraInfo
 from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
@@ -5,21 +15,16 @@ import numpy as np
 import os
 import cv2
 
-
-from duckietown_slimremote.pc.robot import RemoteRobot
-
+from env import launch_env
 
 class ROSAgent(object):
     def __init__(self):
         # Get the vehicle name, which comes in as HOSTNAME
         self.vehicle = os.getenv('HOSTNAME')
 
-        # Get the hostname to conect to server
-        host = os.getenv("DUCKIETOWN_SERVER", "localhost")
-        
-        # Create ZMQ connection with Server
-        self.sim = RemoteRobot(host, silent=False)
-        
+        # Use our env launcher
+        self.env = launch_env()
+
         # Subscribes to the output of the lane_controller_node and IK node
         self.action_sub = rospy.Subscriber('/{}/lane_controller_node/car_cmd'.format(
             self.vehicle), Twist2DStamped, self._action_cb)
@@ -90,7 +95,7 @@ class ROSAgent(object):
         Steps the sim with the last action at rate of 10Hz
         """
         while not rospy.is_shutdown():
-            img, r , d, _ = self.sim.step(self.action)
+            img, r , d, _ = self.env.step(self.action)
             self._publish_img(img)
             self._publish_info()
             self.r.sleep()

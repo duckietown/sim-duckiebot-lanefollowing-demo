@@ -1,0 +1,25 @@
+<launch>
+	<arg name="veh"/>
+	<arg name="bagin"/>
+
+    <!-- play one bag -->
+    <node pkg="rosbag" type="play" name="player" args="$(arg bagin) "/>
+
+    <!-- record all the file other -->
+
+    <node pkg="rosbag" type="record" name="rosbag_record"
+          args="-e '/line_detector_node/.*' -O $(arg bagout)"/>
+
+
+		<remap from="/line_detector_node/corrected_image/compressed" to="/$(arg veh)/image_transformer_node/corrected_image/compressed"/>
+		<remap from="/line_detector_node/fsm_mode" to="/$(arg veh)/fsm_node/mode"/>
+		<remap from="/line_detector_node/switch" to="/$(arg veh)/line_detector_node/switch"/>
+
+
+    <node name="line_detector_node" pkg="line_detector" type="line_detector_node.py" output="screen" clear_params="true" required="true">
+              <rosparam command="load" file="$(find duckietown)/config/baseline/line_detector/line_detector_node/default.yaml"/>
+              <param name="verbose" value="true"/>
+    </node>
+
+
+</launch>
