@@ -29,7 +29,7 @@ services:
     lanefollow:
         build: 
             context: .
-            dockerfile: DockerfileCatkin
+            dockerfile: DockerfileLFSlim
         networks:
         - gym-duckietown-net
 

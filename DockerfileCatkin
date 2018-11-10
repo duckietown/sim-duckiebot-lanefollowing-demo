@@ -13,6 +13,7 @@ RUN chmod +x custom_ws/src/dt_dependent_node/dt_dependent_node.py
 # launch this by finding `custom_line_detector`# and putting that in the 
 # lf_slim.launch file  
 COPY custom_line_detector custom_ws/src/custom_line_detector
+# Don't forget to "chmod" any node you may need inside!
 
 RUN /bin/bash -c "cd custom_ws/src/"
 
